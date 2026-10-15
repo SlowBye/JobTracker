@@ -1,17 +1,43 @@
 package org.example;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
-public class Main {
-    static void main() {
-        //TIP Press <shortcut actionId="ShowIntentionActions"/> with your caret at the highlighted text
-        // to see how IntelliJ IDEA suggests fixing it.
-        IO.println(String.format("Hello and welcome!"));
+import org.example.domain.*;      // donne accès à toutes tes classes du domaine
+import java.util.ArrayList;
+import java.util.List;
 
-        for (int i = 1; i <= 5; i++) {
-            //TIP Press <shortcut actionId="Debug"/> to start debugging your code. We have set one <icon src="AllIcons.Debugger.Db_set_breakpoint"/> breakpoint
-            // for you, but you can always add more by pressing <shortcut actionId="ToggleLineBreakpoint"/>.
-            IO.println("i = " + i);
+public class Main {
+
+    static List<Candidature> filtrer(List<Candidature> candidatures, CritereCandidature  critere) {
+        List<Candidature> candidaturesFiltrer = new ArrayList<>();
+        for (Candidature candidature : candidatures) {
+            if(critere.Accepte(candidature)) {
+                candidaturesFiltrer.add(candidature);
+            }
         }
+        return candidaturesFiltrer;
+    }
+
+    static void main() {
+        Entreprise Acme = new Entreprise("Acme", "Marseille", "informatique", "https://www.Acme.fr");
+        Entreprise Globex = new Entreprise("Globex", "Arles", "informatique c++", "https://www.Globex.fr");
+        Offre AcmeOffre = new Offre("Développeur Java junior", Acme, List.of("Java","Spring"),"https://www.Acme.fr","France Travail");
+        Offre GlobexOffre = new Offre("Développeur TypeScript", Globex, List.of("TypeScript","JavaScript", "Jest"),"https://www.Acme.fr","Indeed");
+
+        Candidature A = new Candidature(AcmeOffre, StatutCandidature.ENVOYEE,"Premier contact");
+        Candidature B = new Candidature(GlobexOffre, StatutCandidature.ENTRETIEN,"Entretien avec la RH");
+        Candidature C = new Candidature(AcmeOffre, StatutCandidature.REFUS,"Refus");
+
+        List<Candidature> candidatures = List.of(A,B,C);
+        CritereCandidature critereCandidature = new CritereParEntreprise("acme");
+        for (Candidature c : filtrer(candidatures, critereCandidature)) {
+            System.out.println(c.getOffre().getEntreprise().getNom());
+        }
+
+        System.out.println("Deuxième Critère de sélection :");
+
+        CritereParStatut critereParStatut = new CritereParStatut(StatutCandidature.ENTRETIEN);
+        for (Candidature c : filtrer(candidatures, critereParStatut)) {
+            System.out.println(c.getOffre().getEntreprise().getNom());
+        }
+
     }
 }
